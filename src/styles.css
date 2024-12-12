@@ -1,0 +1,13 @@
+/* You can add global styles to this file, and also import other style files */
+/* @import "~@fortawesome/fontawesome-free/css/all.css"; */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.mat-snack-bar-container {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    transform: none !important;
+  }
+  
