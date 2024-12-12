@@ -1,0 +1,230 @@
+
+<div class="checkout-header bg-light py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h1 class="mb-0">Checkout Page</h1>
+      <!-- <a href="#" class="text-muted">Log in</a> -->
+      <i class="fa fa-cart-shopping me-2" routerLink="/yourCart"></i>
+    </div>
+  </div>
+  
+  <div class="container my-4">
+    <form
+      [formGroup]="shippingAddressForm"
+      (ngSubmit)="onSubmit()"
+      class="row"
+    >
+      <!-- Left Section -->
+      <div class="bg-light col-lg-7">
+        <!-- Contact Section -->
+        <div class="mb-4">
+          <h4>Contact</h4>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              formControlName="email"
+              placeholder="Email"
+            />
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="newsOffers"
+            />
+            <label class="form-check-label" for="newsOffers">
+              Email me with news and offers
+            </label>
+          </div>
+        </div>
+  
+        <!-- Delivery Section -->
+        <div class="mb-4">
+          <h4>Delivery</h4>
+          <div class="mb-3">
+            <label for="country" class="form-label">Country/Region</label>
+            <select
+              class="form-select"
+              id="country" formControlName="country" (change)="onCountrySelect($event)"
+            >
+              <!-- <option value="US">United States</option> -->
+              <option *ngFor="let country of countries" [value]="country.name">{{ country.name }}</option>
+            </select>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <input
+                type="text"
+                class="form-control mb-3"
+                placeholder="First name"
+                formControlName="fName"
+              />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                class="form-control mb-3"
+                placeholder="Last name"
+                formControlName="lName"
+              />
+            </div>
+          </div>
+          <input
+            type="text"
+            class="form-control mb-3"
+            placeholder="Address"
+            formControlName="lineOne"
+          />
+          <input
+            type="text"
+            class="form-control mb-3"
+            placeholder="Apartment, suite, etc. (optional)"
+            formControlName="lineTwo"
+          />
+          <div class="row">
+
+            <div class="col-md-4" (change)="onStateSelect($event)">
+              <select
+                class="form-select mb-3"
+                id="state" formControlName="state"
+              >
+                <option value="" disabled selected>Select State</option>
+                <option *ngFor="let state of states" [value]="state.name">{{ state.name }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <select
+                class="form-select mb-3"
+                id="city" formControlName="city"
+              >
+                <option value="" disabled selected>Select City</option>
+                <option *ngFor="let city of cities" [value]="city.name">{{ city.name }}</option>
+              </select>
+            </div>
+
+
+            <div class="col-md-4">
+              <input
+                type="text"
+                class="form-control mb-3"
+                placeholder="ZIP code"
+                formControlName="pincode"
+              />
+            </div>
+          </div>
+          <input
+            type="text"
+            class="form-control mb-3"
+            placeholder="Telephone"
+            formControlName="telephone"
+          />
+        </div>
+  
+        <!-- Payment Section -->
+        <div class="payment-modal">
+          <h4>Payment</h4>
+          <!-- <p>All transactions are secure and encrypted.</p> -->
+          <div class="mb-3">
+            <label for="paymentMethod" class="form-label">Payment Method</label>
+            <select
+              class="form-select"
+              id="paymentMethod"
+              formControlName="paymentMethod"
+              (click)="paymentEvent(totalPrice);"
+            >
+              <option value="cod">Cash on Delivery</option>
+              <option value="card">Card Payment</option>
+            </select>
+          </div>
+  
+          <!-- Card Details Section -->
+          <div id="card-element" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'card'">
+
+            <!-- For card -->
+            <div id="card-number-element" class="form-control mb-3"></div>
+            <div *ngIf="!areCardFieldsValid() && cardNumberError" id="invalid-card-no" class="invalid-div invalid-card-no-div">
+              <!-- <img class="payment-chevron" src="assets/images/chevron-down-info.svg" /> -->
+              <i class="fa-solid fa-circle-info fa-sm" style="color: #dc3545;"></i>
+              <p id="invalid-card-no-msg" class="invalid-card-no-text">Invalid Card Number</p>
+            </div>
+
+            <div class="row">
+
+             <!-- For exp date -->
+             <div class="col-md-6">
+               <div id="card-expiry-element" class="form-control mb-3"></div>
+               <div *ngIf="!areCardFieldsValid() && cardExpiryError" id="invalid-card-expiry" class="invalid-div invalid-card-expiry-div">
+                <img class="payment-chevron" src="assets/images/chevron-down-info.svg" />
+                <p id="invalid-card-no-msg" class="invalid-card-no-text">Invalid Date</p>
+              </div>
+              </div>
+
+              <!-- For cvc -->
+              <div class="col-md-6">
+                <div id="card-cvc-element" class="form-control mb-3"></div>
+                <div *ngIf="!areCardFieldsValid() && cardCVVError" id="invalid-card-cvv" class="invalid-div invalid-card-cvv-div">
+                  <img class="payment-chevron" src="assets/images/chevron-down-info.svg" />
+                  <p id="invalid-card-no-msg" class="invalid-card-no-text">Invalid CVV</p>
+                </div>
+              </div>
+            </div>
+
+            <p>All transactions are secure and encrypted.</p>
+          </div>
+        </div>
+        <!-- <div class="row">
+          <button type="submit" class="btn btn-success w-85">Save</button>
+        </div> -->
+      </div>
+  
+      <!-- Right Section -->
+      <div class="col-lg-5">
+        <div class="bg-light p-4">
+          <div class="d-flex align-items-center mb-4">
+            <img
+              src="https://via.placeholder.com/80"
+              alt="Product Image"
+              class="me-3"
+            />
+            <div>
+              <p class="mb-1">Balance Supplements</p>
+              <p class="text-muted small">One-time purchase - 2 months supply</p>
+              <p>$219.00</p>
+            </div>
+          </div>
+          <div class="input-group mb-4">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Discount code"
+            />
+            <button class="btn btn-secondary">Apply</button>
+          </div>
+          <div class="order-summary mb-4">
+            <div class="d-flex justify-content-between">
+              <p>Subtotal</p>
+              <p>${{ totalPrice | number: '1.2-2' }}</p>
+            </div>
+            <!-- <div class="d-flex justify-content-between">
+              <p>Shipping</p>
+              <p>Enter shipping address</p>
+            </div> -->
+            <hr />
+            <div class="d-flex justify-content-between">
+              <p>Total</p>
+              <p>${{ totalPrice | number: '1.2-2' }}</p>
+            </div>
+            <!-- <p class="text-muted small">
+              Recurring subtotal: $219.00 every 2 months
+            </p> -->
+          </div>
+          <!-- <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'COD'" (click)="codHandlePayment()">Pay now cod ${{ totalPrice | number: '1.2-2' }}</button>
+          <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'CARD'" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button> -->
+          <button class="btn btn-danger w-100" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button>
+        </div>
+      </div>
+    </form>
+  </div>

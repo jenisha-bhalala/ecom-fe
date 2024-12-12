@@ -1,0 +1,143 @@
+<div class="container py-5">
+    <!-- Empty Cart State -->
+    <div *ngIf="!cartItems.cart?.length" class="min-vh-75 d-flex align-items-center justify-content-center">
+      <div class="text-center">
+        <div class="position-relative mb-4" style="width: 200px; height: 200px; margin: auto;">
+          <div class="position-absolute top-50 start-50 translate-middle">
+            <!-- Shopping Bag Icon -->
+            <div class="text-danger" style="font-size: 5rem;">
+              <i class="fas fa-shopping-bag"></i>
+            </div>
+            <!-- Decorative Elements -->
+            <div class="position-absolute" style="width: 100%; height: 100%; top: 0; left: 0;">
+              <ng-container *ngFor="let i of [0,1,2,3,4,5,6,7]">
+                <div class="position-absolute rounded-circle"
+                     [style.width.px]="32"
+                     [style.height.px]="32"
+                     [style.background-color]=""
+                     [style.opacity]="0.2"
+                     >
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <h2 class="fw-bold mb-2">Your cart is currently empty!</h2>
+        <p class="text-muted mb-4">Add product and proceed</p>
+        <button class="btn btn-danger px-4 py-2" routerLink="/products">
+          START SHOPPING
+        </button>
+      </div>
+    </div>
+
+    <!-- Filled Cart State -->
+    <div *ngIf="cartItems.cart?.length" class="row">
+      <!-- Cart Items Section -->
+      <div class="col-lg-8 mb-4 mb-lg-0">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="h5 fw-bold mb-4">My Cart</h2>
+            <p class="text-muted small mb-4">{{cartItems.totalItemInCart}} item(s) in your cart</p>
+            
+            <!-- Cart Items -->
+            <div *ngFor="let item of cartItems.cart" class="d-flex gap-3 py-3 border-bottom">
+              <div style="width: 100px; height: 100px;" class="bg-light rounded">
+                <img [src]="item.product.image" [alt]="item.product.name" class="w-100 h-100 object-fit-cover">
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center">
+                    <!-- Product Name -->
+                    <h3 class="h6 fw-bold mb-0">{{item.product.name}}</h3>
+                
+                    <!-- Trash Icon -->
+                    <button class="btn ms-auto p-0" (click)="deleteProductFromCart(item.id)">
+                      <i class="fa-solid fa-trash" style="color: #000000;"></i>
+                    </button>
+                  </div>
+                <p class="">{{item.product.description}}</p>
+                <div class="d-flex align-items-center gap-3 mt-2">
+                  <!-- Quantity Controls -->
+                  <div class="input-group" style="width: fit-content;">
+                    <button class="btn btn-outline-secondary" (click)="changeQuan(item.id, item.quantity - 1)"  [disabled]="item.quantity <= 1">-</button>
+                    <input type="number" class="form-control text-center" style="width: 60px;"
+                           [value]="item.quantity">
+                    <button class="btn btn-outline-secondary" (click)="changeQuan(item.id, item.quantity + 1)">+</button>
+                  </div>
+                  <p class="fw-bold mb-0">${{item.product.price}}</p>
+                </div>
+                <p *ngIf="item.delivery" class="small text-warning mt-2">
+                  <i class="fas fa-bolt me-1"></i>{{item.delivery}}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Summary Section -->
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="h5 fw-bold mb-4">Payment Summary</h2>
+            
+            <!-- Summary Details -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Total Amount</span>
+                <span>${{ productPrice | number: '1.2-2' }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Total GST</span>
+                <span>${{ taxAmount | number: '1.2-2' }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Total Shipping</span>
+                <span>${{ shippingCharge | number: '1.2-2' }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Total Coupon Discount</span>
+                <span>$0.00</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between fw-bold">
+                <span>Amount Payable</span>
+                <span>${{ totalPrice | number: '1.2-2' }}</span>
+              </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <button class="btn btn-danger w-100 py-2 mb-4" (click)="navigatingToCheckout()">
+              CHECKOUT
+            </button>
+
+            <!-- Coupon Section -->
+            <div>
+              <h3 class="h6 fw-bold mb-3">1 Exciting Offers Are Waiting For You!</h3>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Enter Coupon Code">
+                <button class="btn btn-secondary">APPLY</button>
+              </div>
+              <div class="border border-success border-2 rounded p-3" style="border-style: dashed !important;">
+                <div class="d-flex gap-2">
+                  <span class="text-success">✓</span>
+                  <div>
+                    <p class="fw-bold mb-1">NOV300</p>
+                    <p class="small text-muted mb-2">Flat Rs. 300 OFF all Products on November Sale</p>
+                  </div>
+                </div>
+                <button class="btn btn-link text-success w-100 text-decoration-none">APPLY</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+          <button class="btn btn-danger w-100 py-2 mb-4" routerLink="/products">
+            Forgot To Add Something? Don't Worry 😉 
+            <p>Go back to Products</p>
+          </button>
+      </div>
+
+    </div>
+  </div>

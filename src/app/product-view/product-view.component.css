@@ -1,0 +1,304 @@
+
+
+/* Parent container */
+.menu-grid {
+    display: flex;
+    height: 100vh; /* Full-height layout */
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 250px;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .menu {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .menu li {
+    margin-bottom: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .menu li:hover {
+    color: #007bff;
+  }
+  
+  /* Products container */
+  .products-container {
+    flex: 1; /* Takes up the remaining space next to the sidebar */
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    gap: 20px; /* Space between product items */
+    overflow-y: auto; /* Scrollable if content exceeds the height */
+  }
+  
+  /* Product items */
+  .product-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: calc(33.333% - 20px); /* Three items per row with a gap */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .tm-container-content {
+    margin-top: 80px; /* Adjust this value to match the height of the sticky search bar */
+  }
+  .effect-ming img {
+    width: 100%;
+    height: 20vw; /* Scales height relative to viewport width */
+    max-height: 300px; /* Caps the maximum height */
+    object-fit: cover;
+  }
+  figure.effect-ming h2 {
+    font-size: 1.3em;
+	  opacity: 0;
+    -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
+    transition: opacity 0.35s, transform 0.35s;
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+}
+
+figure.effect-ming:hover figcaption::before,
+figure.effect-ming:hover h2 {
+	opacity: 1;
+	-webkit-transform: scale3d(1,1,1);
+	transform: scale3d(1,1,1);
+}
+
+figure.effect-ming:hover figcaption { background-color: rgba(58,52,42,0); }
+figure.effect-ming:hover img { opacity: 0.4; }
+
+.custom-btn {
+  background-color: #000000; /* Green background */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  padding: 8px 16px; /* Adjust padding */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 14px; /* Adjust font size */
+}
+
+.custom-btn:hover {
+  background-color: #494949; /* Darker green on hover */
+}
+
+  .button-container {
+    display: flex;
+    align-items: center; /* Vertically align buttons */
+  }
+  
+  .tm-cart-btn {
+    margin-left: auto; /* Pushes the cart button to the right */
+  }
+  
+  .sticky-search-bar {
+    position: fixed;
+    top: 0;
+    width: 100%; /* Ensure it spans the screen but content is centered */
+    z-index: 1000;
+    background-color: rgb(0, 0, 0);
+    padding: 10px 0; /* Add vertical padding for better aesthetics */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow effect */
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+  }
+  
+  .sticky-search-bar input.tm-search-input {
+    width: 300px; /* Set desired input width */
+    margin-right: -35px; /* Space between input and button */
+  }
+  
+  .sticky-search-bar button.tm-search-btn {
+    padding: 6px 12px; /* Adjust button padding */
+  }
+  h4:first-child {
+    opacity: 0;
+  }
+  
+
+  .tm-nav-btn {
+    /* background-color: #eeeeeea9; */
+    color: #080808;
+  }
+  .tm-nav-btn:hover {
+    background-color: #000000;
+    color: #fff; 
+  }
+
+  .active-nav-tab {
+    background-color: #000000;
+    color: #fff; 
+  }
+  .sticky-sidebar {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 0; /* Sticks the sidebar to the top */
+    height: 100vh; /* Ensure it takes full height of the viewport */
+    overflow-y: auto; /* Allows vertical scrolling if content exceeds the screen */
+  }
+  
+  
+  
+  .product-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+  
+  .product-name {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .product-description {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+  }
+  
+  .product-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .product-price {
+    font-size: 16px;
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .cart {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .cart:hover {
+    background-color: #0056b3;
+  }
+  
+  .search-bar {
+    position: absolute;
+    /* top: 0; */
+    /* z-index: 100; */
+    /* background-color: #fff; */
+    padding: 10px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* margin-bottom: 20px;
+    text-align: center; */
+  }
+
+  .search-bar input {
+    width: 50%;
+    max-width: 400px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .logo-icon {
+    width: 32px; /* Set the desired width */
+    height: 32px; /* Maintain the same height for consistency */
+    object-fit: contain; /* Ensures the image scales correctly */
+  }
+  
+  .search-bar input:focus {
+    border-color: #007bff;
+  }
+  .tm-search-btn {
+    position: relative;
+  }
+  
+  .cart-count {
+    position: relative;
+    /* top: 0;  Adjust the vertical position  */
+    right: -4px; /* Adjust the horizontal position */
+    transform: translate(50%, -50%); /* Fine-tune placement on the icon corner */
+    font-size: 0.6rem; /* Small badge size */
+    color: rgb(255, 255, 255); /* Badge text color */
+    background-color: rgb(249, 66, 66); /* Badge background color */
+    border-radius: 50%; /* Circular shape */
+    padding: 1px 5px; /* Adjust padding for the badge size */
+    min-width: 10px; /* Ensure the badge is at least a circle */
+    text-align: center;
+  }
+
+  .clickable-icon {
+    cursor: pointer;
+    transition: color 0.3s, transform 0.1s; /* Smooth transition */
+  }
+  
+  .clickable-icon:hover {
+    color: #000000; /* Hover color */
+    transform: scale(1.5); /* Slight zoom effect */
+  }
+  
+  
+
+  .sticky-search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #333; /* Background color */
+  }
+  
+  .logo-container,
+  .cart-container {
+    flex: 0 0 auto; /* Fixes logo and cart position */
+  }
+  
+  .search-container {
+    flex: 0 0 auto; /* Prevents the search bar from stretching */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 400px; /* Sets the maximum width of the search bar */
+    width: 100%; /* Ensures responsiveness */
+  }
+  
+  .tm-search-input {
+    flex: 1; /* Makes input occupy most of the space within the container */
+  }
+  
+
+  
+  
+  .cart-container {
+    position: relative;
+  }
+  
+
+  
+  
+  

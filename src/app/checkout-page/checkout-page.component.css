@@ -1,0 +1,55 @@
+.checkout-container {
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh; /* Full height */
+    display: flex;
+    align-items: center; /* Vertical center */
+    justify-content: center; /* Horizontal center */
+  
+    h4 {
+      font-weight: bold;
+    }
+  
+    .form-control {
+      border-radius: 5px;
+    }
+  
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+  
+    .order-summary p {
+      margin-bottom: 0;
+    }
+  
+    .order-summary hr {
+      margin: 1rem 0;
+    }
+  
+    .text-muted {
+      font-size: 0.85rem;
+    }
+  }
+  
+  .checkout-wrapper {
+    max-width: 900px; /* Restrict width */
+    width: 100%; /* Full width for smaller screens */
+  }
+
+  .invalid-div {
+    /* padding-top: 7px; */
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+}
+
+#card-element, .payment-modal {
+  margin-bottom: 40px; /* Adds spacing at the bottom of the card element */
+}
+
+#invalid-card-no-msg {
+  margin-top: 10px;
+  margin-left: 10px;
+  color: #dc3545;
+}
