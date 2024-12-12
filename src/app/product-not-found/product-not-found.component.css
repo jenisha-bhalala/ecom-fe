@@ -1,0 +1,109 @@
+h2.up__error-title  {
+    color: #632588;
+    font-family: circular std med!important;
+    font-size: 60px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: -3px;
+    line-height: 65px;
+    text-align: center;
+    margin: 0;
+}
+.up__error-subtitle{
+    color: #2f3436;
+    font-family: circular std med;
+    font-size: 45px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: -2.25px;
+    line-height: 60px;
+    margin: 0;
+    text-align: center;
+}
+input.up__error-input {
+    background-color: #fff;
+    border: 1px solid rgba(59,62,102,.15);
+    border-radius: 8px;
+    color: #879297;
+    font-family: circular std book;
+    font-size: 14px;
+    font-weight: 400;
+    height: 45px;
+    letter-spacing: 0;
+    line-height: 45px;
+    padding: 0 15px 0 48px;
+    position: relative;
+    text-align: left;
+    width: 100%;
+}
+.up__error-btn{
+    background-color: #632588;
+    border-radius: 8px;
+    box-shadow: 0 8px 10px rgba(235,96,54,.1),0 0 1px rgba(235,96,54,.1);
+    color: #fff;
+    display: inline-block;
+    font-family: circular std med!important;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0;
+    padding: 13px 20px;
+    text-align: center;
+    width: 320px;
+    text-decoration: unset;
+}
+.up__error-img {
+margin: 0 0 56px 0;
+}
+.up__errorblock-wrap{
+display: flex;
+align-items: center;
+justify-content: center;
+height: 100%;
+}
+.up__error-block{
+    width: 100%;
+}
+.up__error-search {
+    max-width: 38%;
+    margin: 40px auto;
+    position: relative;
+}
+.up__input-searchbtn {
+    background: transparent;
+    border: 0;
+    left: 10px;
+    position: absolute;
+    top: 9px;
+    bottom: auto;
+    right:auto;
+}
+::ng-deep body.hide-tox-warnings {
+    background-color: #F4F8F6 !important;
+    min-height: calc(100% - 65px);
+}
+::ng-deep body.hide-tox-warnings .product-content {
+    height: calc(100vh - 65px);
+}
+
+@media (max-width:1650px){
+    .up__error-search {
+        max-width: 45%;
+    }
+}
+@media (max-width:991px){
+    .up__error-search{
+        max-width: 70%;
+    }
+}
+@media (max-width: 767px){
+    .up__error-btn{
+        width: 100%;
+    }
+    .up__error-search{
+        max-width: 100%;
+    }
+    .up__error-img img{
+        max-width: 50%;
+    }
+}

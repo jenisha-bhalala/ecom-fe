@@ -1,0 +1,192 @@
+<!-- <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+
+
+        <div class="card mb-3" *ngIf="isLoginMode">
+          <div class="card-header">
+            <h4>Login</h4>
+          </div>
+          <div class="card-body">
+            <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+              <div class="form-group mb-3">
+                <label for="loginEmail">Email</label>
+                <input
+                  type="email"
+                  id="loginEmail"
+                  class="form-control"
+                  [(ngModel)]="loginData.email"
+                  name="email"
+                  required
+                />
+              </div>
+              <div class="form-group mb-3">
+                <label for="loginPassword">Password</label>
+                <input
+                  type="password"
+                  id="loginPassword"
+                  class="form-control"
+                  [(ngModel)]="loginData.password"
+                  name="password"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100" [disabled]="!loginForm.valid">Login</button>
+              <p (click)="onSwitchMode()">Don't have an acoount?
+                <span class="highlighted">Register</span>
+              </p>
+            </form>
+          </div>
+        </div>
+  
+        
+        <div class="card" *ngIf="!isLoginMode">
+          <div class="card-header">
+            <h4>Sign Up</h4>
+          </div>
+          <div class="card-body">
+            <form (ngSubmit)="onSignup()" #signupForm="ngForm">
+              <div class="form-group mb-3">
+                <label for="signupName">Name</label>
+                <input
+                  type="text"
+                  id="signupName"
+                  class="form-control"
+                  [(ngModel)]="signupData.name"
+                  name="name"
+                  required
+                />
+              </div>
+              <div class="form-group mb-3">
+                <label for="signupEmail">Email</label>
+                <input
+                  type="email"
+                  id="signupEmail"
+                  class="form-control"
+                  [(ngModel)]="signupData.email"
+                  name="email"
+                  required
+                />
+              </div>
+              <div class="form-group mb-3">
+                <label for="signupPassword">Password</label>
+                <input
+                  type="password"
+                  id="signupPassword"
+                  class="form-control"
+                  [(ngModel)]="signupData.password"
+                  name="password"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100" [disabled]="!signupForm.valid">Sign Up</button>
+              <p (click)="onSwitchMode()">Already have an acoount?
+                <span class="highlighted">Login</span>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+   -->
+
+
+      <div class="wrapper" *ngIf="isLoginMode">
+         <div class="title">
+            Login Form
+         </div>
+         <form action="#" (ngSubmit)="onLogin()" #loginForm="ngForm">
+            <div class="field">
+               <input type="email"
+                id="loginEmail"
+                class="form-control"
+                [(ngModel)]="loginData.email"
+                name="email"
+                required required>
+               <label for="loginEmail">Email Address</label>
+            </div>
+            <div class="field">
+              <input
+                type="password"
+                id="loginPassword"
+                class="form-control"
+                [(ngModel)]="loginData.password"
+                name="password"
+                required
+              />
+            </div>
+            <div class="content">
+               <div class="checkbox">
+                  <input type="checkbox" id="remember-me">
+                  <label for="remember-me">Remember me</label>
+               </div>
+               <div class="pass-link">
+                  <a href="#">Forgot password?</a>
+               </div>
+            </div>
+            <div class="field">
+               <input type="submit" value="Login">
+            </div>
+            <div class="signup-link">
+              Don't have an acoount? <p (click)="onSwitchMode()">Signup now</p>
+            </div>
+         </form>
+      </div>
+
+
+      <div class="wrapper" *ngIf="!isLoginMode">
+        <div class="title">
+           Signup Form
+        </div>
+        <form action="#" (ngSubmit)="onSignup()" >
+           <div class="field">
+            <label for="signupName">Name</label>
+            <input
+              type="text"
+              id="signupName"
+              class="form-control"
+              [(ngModel)]="signupData.name"
+              name="name"
+              required
+            />
+           </div>
+           <div class="field">
+            <label for="signupEmail">Email</label>
+            <input
+              type="email"
+              id="signupEmail"
+              class="form-control"
+              [(ngModel)]="signupData.email"
+              name="email"
+              required
+            />
+           </div>
+           <div class="field">
+            <input
+              type="password"
+              id="signupPassword"
+              class="form-control"
+              [(ngModel)]="signupData.password"
+              name="password"
+              required
+            />
+            <label for="signupPassword">Password</label>
+           </div>
+           <div class="content">
+              <div class="checkbox">
+                 <input type="checkbox" id="remember-me">
+                 <label for="remember-me">Remember me</label>
+              </div>
+              <div class="pass-link">
+                 <a href="#">Forgot password?</a>
+              </div>
+           </div>
+           <div class="field">
+              <input type="submit" value="SignUp">
+           </div>
+           <div class="signup-link">
+            Already have an acoount? <p (click)="onSwitchMode()">Login</p>
+           </div>
+        </form>
+     </div>
