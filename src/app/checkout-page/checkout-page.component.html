@@ -3,7 +3,7 @@
     <div class="container d-flex justify-content-between align-items-center">
       <h1 class="mb-0">Checkout Page</h1>
       <!-- <a href="#" class="text-muted">Log in</a> -->
-      <i class="fa fa-cart-shopping me-2" routerLink="/yourCart"></i>
+      <!-- <i class="fa fa-cart-shopping me-2" routerLink="/yourCart"></i> -->
     </div>
   </div>
   
@@ -183,16 +183,25 @@
       <!-- Right Section -->
       <div class="col-lg-5">
         <div class="bg-light p-4">
-          <div class="d-flex align-items-center mb-4">
-            <img
-              src="https://via.placeholder.com/80"
-              alt="Product Image"
-              class="me-3"
-            />
-            <div>
-              <p class="mb-1">Balance Supplements</p>
-              <p class="text-muted small">One-time purchase - 2 months supply</p>
-              <p>$219.00</p>
+          <div *ngFor="let item of cartItems.cart" class="d-flex align-items-center mb-4 position-relative">
+            <!-- Product Image -->
+            <div class="position-relative">
+              <img
+                [src]="item.product.image"
+                [alt]="item.product.name"
+                style="width: 100px; height: 100px; object-fit: cover; background-color: #f8f9fa;"
+                class="rounded img-fluid"
+              />
+              <!-- Quantity Badge -->
+              <span class="quantity-badge position-absolute top-0 start-0 translate-middle badge bg-warning text-dark">
+                {{ item.quantity }}
+              </span>
+            </div>
+            <!-- Product Details -->
+            <div style="flex: 1; margin-left: 1rem;">
+              <p class="mb-1">{{ item.product.name }}</p>
+              <p class="text-muted small">{{ item.product.description }}</p>
+              <p>${{ item.quantity * item.product.price | number: '1.2-2' }}</p>
             </div>
           </div>
           <div class="input-group mb-4">
@@ -206,12 +215,16 @@
           <div class="order-summary mb-4">
             <div class="d-flex justify-content-between">
               <p>Subtotal</p>
-              <p>${{ totalPrice | number: '1.2-2' }}</p>
+              <p>${{ productPrice | number: '1.2-2' }}</p>
             </div>
-            <!-- <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between">
+              <p>Tax</p>
+              <p>${{ taxAmount | number: '1.2-2' }}</p>
+            </div>
+            <div class="d-flex justify-content-between">
               <p>Shipping</p>
-              <p>Enter shipping address</p>
-            </div> -->
+              <p>${{ shippingCharge | number: '1.2-2' }}</p>
+            </div>
             <hr />
             <div class="d-flex justify-content-between">
               <p>Total</p>
@@ -221,9 +234,9 @@
               Recurring subtotal: $219.00 every 2 months
             </p> -->
           </div>
-          <!-- <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'COD'" (click)="codHandlePayment()">Pay now cod ${{ totalPrice | number: '1.2-2' }}</button>
-          <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'CARD'" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button> -->
-          <button class="btn btn-danger w-100" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button>
+          <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'cod'" (click)="codHandlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button>
+          <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'card'" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button>
+          <!-- <button class="btn btn-danger w-100" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button> -->
         </div>
       </div>
     </form>
