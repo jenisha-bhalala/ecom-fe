@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 import { loadStripe, Stripe, StripeCardCvcElement, StripeCardElement, StripeCardExpiryElement, StripeCardNumberElement, StripeElements } from '@stripe/stripe-js';
 import { SharedService } from '../service/shared.service';
 import { firstValueFrom, Observable } from 'rxjs';
+import { CartService } from '../service/cart.service';
 const stripePromise = loadStripe(environment.stripe_public_key);
 
 interface PaymentIntentResponse {
@@ -66,6 +67,14 @@ export class CheckoutPageComponent implements OnInit {
   cities: any[] = [];
   order = { id: 'testid' };
 
+  taxAmount = this.sharedService.taxAmount;
+  shippingCharge = this.sharedService.shippingCharge;
+
+  cartItems: any;
+  totalPrice: number = 0
+  productPrice: number = 0
+
+
 
 
 
@@ -76,6 +85,7 @@ export class CheckoutPageComponent implements OnInit {
     private shipAddress: ShippingAddressService,
     private stripeService: StripeService,
     private sharedService: SharedService,
+    private cartService: CartService,
   ) {
     this.shippingAddressForm = this.fb.group({
       fName: ['', Validators.required],
@@ -100,12 +110,13 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   async ngOnInit() {
-    
 
     // await this.apiCountry();
     // this.apiState();
     // this.apiCity();
     await this.loadCountries();
+
+    await this.getCartItems();
 
     this.paymentForm = this.fb.group({
       cardNumber: ['', Validators.required],
@@ -138,6 +149,44 @@ export class CheckoutPageComponent implements OnInit {
 
   }
 
+  async getCartItems() {
+
+    this.cartService.getCart().subscribe({
+      next: async (response) => {
+
+        this.cartItems = response
+        console.log('Getting user\'s cart', response);
+        console.log('cartItems.cart cart', this.cartItems.cart);
+        this.sharedService.totalProducts = this.cartItems.totalItemInCart
+        await this.calculateTotalProductPrice();
+        this.totalPayableAmount();
+      }
+    })
+    
+  }
+
+  async calculateTotalProductPrice() {
+
+    this.productPrice = 0;
+    for(let item of this.cartItems.cart) {
+
+      this.productPrice += (item.quantity * item.product.price) 
+    }
+    console.log('////////////////////////productPrice: ', this.productPrice);
+    
+  }
+
+  async totalPayableAmount() {
+
+    this.totalPrice = 0;
+
+    if(this.productPrice != 0 ) {
+      this.totalPrice = this.productPrice + this.taxAmount + this.shippingCharge;
+      // this.sharedService.totalPrice = this.totalPrice
+    }
+
+  }
+
   // Load states for selected country
 loadStates(countryIso2: string): void {
   this.countryService.apiStates(countryIso2).subscribe(states => {
@@ -159,9 +208,9 @@ loadCities(countryIso2: string, stateIso2: string): void {
   });
 }
 
-  get totalPrice(): number {
-    return this.sharedService.totalPrice; // Access value from service
-  }
+  // get totalPrice(): number {
+  //   return this.sharedService.totalPrice; // Access value from service
+  // }
 
   get totalProduct(): number {
     return this.sharedService.totalProducts; // Access value from service
@@ -366,7 +415,9 @@ pid: any;
 
 
             await this.confirmingOrder();
-            this.router.navigate([`/order-confirmed/${uniqueOrderId}`]);
+        console.log('222222222222222222222222222 response', this.orderRes);
+
+            this.router.navigate([`/order-confirmed/${this.orderRes.id}-${uniqueOrderId}`]);
 
             // this.router.navigate(['/order-confirmed']);
 
@@ -417,7 +468,7 @@ pid: any;
     this.order['id'] = uniqueOrderId; // Store the ID in your order object
 
     await this.confirmingOrder();
-    this.router.navigate([`/order-confirmed/${uniqueOrderId}`]);
+    this.router.navigate([`/order-confirmed/${this.orderRes.id}-${uniqueOrderId}`]);
 
   }
 
@@ -573,21 +624,35 @@ pid: any;
     }
   }
 
-  async confirmingOrder() {
+  orderRes: any;
 
-    const selectedPaymentMethod  = this.shippingAddressForm.get('paymentMethod')!.value; 
-    (await this.shipAddress.confirmOrder(this.addressId, this.totalPrice, selectedPaymentMethod)).subscribe({
-      next: async (response) => {
+  // async confirmingOrder() {
 
+  //   const selectedPaymentMethod  = this.shippingAddressForm.get('paymentMethod')!.value; 
+  //   (await this.shipAddress.confirmOrder(this.addressId, this.totalPrice, selectedPaymentMethod)).subscribe({
+  //     next: async (response) => {
+  //     this.orderRes = response;
         
-        console.log('hhhhhhhhhhhhhhhhhh confirmed');
-        console.log('hhhhhhhhhhhhhhhhhh response', response);
-      }
+  //       console.log('hhhhhhhhhhhhhhhhhh confirmed');
+  //       console.log('hhhhhhhhhhhhhhhhhh response', response);
+  //     }
       
-    });
+  //   });
 
+  // }
+
+  async confirmingOrder() {
+    const selectedPaymentMethod = this.shippingAddressForm.get('paymentMethod')!.value;
+  
+    // Convert Observable to Promise
+    const response = await (await this.shipAddress.confirmOrder(this.addressId, this.totalPrice, selectedPaymentMethod))
+      .toPromise(); // Converts the Observable to a Promise
+  
+    this.orderRes = response;
+    console.log('hhhhhhhhhhhhhhhhhh confirmed');
+    console.log('hhhhhhhhhhhhhhhhhh response', this.orderRes);
   }
-
+  
   
 
 }

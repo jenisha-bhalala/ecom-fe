@@ -8,6 +8,9 @@ export class SharedService {
   private _totalPrice = 0;
   private _totalProducts = 0;
 
+  taxAmount: number = 12.50;
+  shippingCharge: number = 5.50;
+
   constructor() { }
 
   set totalPrice(price: number) {

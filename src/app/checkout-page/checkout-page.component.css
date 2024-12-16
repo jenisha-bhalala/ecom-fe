@@ -53,3 +53,15 @@
   margin-left: 10px;
   color: #dc3545;
 }
+
+.quantity-badge {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border: 2px solid white; /* Optional for a clean look */
+}
