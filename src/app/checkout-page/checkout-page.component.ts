@@ -74,6 +74,8 @@ export class CheckoutPageComponent implements OnInit {
   totalPrice: number = 0
   productPrice: number = 0
 
+  isSubscribed: boolean = false;
+
 
 
 
@@ -226,8 +228,7 @@ loadCities(countryIso2: string, stateIso2: string): void {
     return result;
   }
 
-pid: any;
-  async paymentEvent(paymentAmount: number) {
+  async initPaymentEvent(paymentAmount: number) {
 
     if(this.shippingAddressForm.get('paymentMethod')?.value == 'card') {
 
@@ -237,27 +238,14 @@ pid: any;
         // lineItems: JSON.stringify(this.order?.lintedItems) || '',
         receiptEmail: this.shippingAddressForm.get('email')?.value || '',
         // productTitle: this.removeDynamicPrefix(this.productTitle).split(' - #')[0],
-        quantity: this.totalProduct
+        quantity: this.totalProduct,
+        paymentType: 'ONE_TIME'
       }
       const amountInCents = Math.round(paymentAmount * 100);
 
 
       const paymentIntentData: any = await this.stripeService.createPaymentIntentFunction(amountInCents, 'USD', payload)
-      
-      //   (await this.stripeService.createPaymentIntentFunction(amountInCents, 'USD', payload)).subscribe({
-      //   next: async (response: any) => {
-      //     console.log('ppppp paymentIntentData⬆️⬆️ :', response);
-
-      //     this.pid = response;
-
-      //   }
-      // })
-      
-      // const paymentIntentData: any = await firstValueFrom(
-      //   await this.stripeService.createPaymentIntentFunction(amountInCents, 'USD', payload)
-      // );
-      // console.log('ppppp paymentIntentData', this.pid);
-
+    
       console.log('ppppp paymentIntentData', paymentIntentData);
       
 
@@ -352,7 +340,12 @@ pid: any;
     }
   }
 
-  async handlePayment() {
+  async handleSubscription() {
+
+    console.log('sub btn clicked!!');
+    
+  }
+  async handleConfirmPayment() {
 
     console.log('this.stripe', this.stripe);
 

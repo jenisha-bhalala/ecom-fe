@@ -133,7 +133,7 @@
               class="form-select"
               id="paymentMethod"
               formControlName="paymentMethod"
-              (click)="paymentEvent(totalPrice);"
+              (click)="initPaymentEvent(totalPrice);"
             >
               <option value="cod">Cash on Delivery</option>
               <option value="card">Card Payment</option>
@@ -235,8 +235,14 @@
             </p> -->
           </div>
           <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'cod'" (click)="codHandlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button>
-          <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'card'" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button>
+          <button class="btn btn-danger w-100" *ngIf="shippingAddressForm.get('paymentMethod')?.value === 'card'" (click)="handleConfirmPayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button>
           <!-- <button class="btn btn-danger w-100" (click)="handlePayment()">Pay now ${{ totalPrice | number: '1.2-2' }}</button> -->
+          <div *ngIf="!isSubscribed" class="d-flex align-items-center my-3">
+            <hr class="flex-grow-1" />
+            <span class="mx-2 fw-bold">OR</span>
+            <hr class="flex-grow-1" />
+          </div>
+          <button *ngIf="!isSubscribed" class="btn btn-danger w-100" (click)="handleSubscription()">Subscribe now to get more Offers</button>
         </div>
       </div>
     </form>
