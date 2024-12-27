@@ -12,6 +12,7 @@ import { loadStripe, Stripe, StripeCardCvcElement, StripeCardElement, StripeCard
 import { SharedService } from '../service/shared.service';
 import { firstValueFrom, Observable } from 'rxjs';
 import { CartService } from '../service/cart.service';
+import { AuthService } from '../service/auth.service';
 const stripePromise = loadStripe(environment.stripe_public_key);
 
 interface PaymentIntentResponse {
@@ -74,9 +75,37 @@ export class CheckoutPageComponent implements OnInit {
   totalPrice: number = 0
   productPrice: number = 0
 
+  userId: any;
   isSubscribed: boolean = false;
+  selectedPlan: 'monthly' | 'yearly' | 'oneDay' = 'monthly'; // Default plan
 
-
+  plans: { 
+    monthly: { price: number; duration: string; discount: string; link: string; priceId: string }; 
+    yearly: { price: number; duration: string; discount: string; link: string; priceId: string }; 
+    oneDay: { price: number; duration: string; discount: string; link: string; priceId: string }; 
+  } = {
+    monthly: {
+      price: 28.00,
+      duration: 'MONTH',
+      discount: 'No Discount',
+      link: 'https://buy.stripe.com/test_fZe28jaWKb7s3jW001',
+      priceId: 'price_1QXasXGYiJ6IfSzHtA64FWno'
+    },
+    yearly: {
+      price: 299.00,
+      duration: 'YEAR',
+      discount: '60% OFF 💰',
+      link: 'https://buy.stripe.com/test_dR600b9SG0sO2fSfZ0',
+      priceId: 'price_1QXb02GYiJ6IfSzH0wg3QuHX'
+    },
+    oneDay: {
+      price: 10.00,
+      duration: 'DAY',
+      discount: 'NO OFF',
+      link: 'https://buy.stripe.com/test_28ocMX4ymfnIf2E147',
+      priceId: 'price_1QZ5XPGYiJ6IfSzHFakxOj93'
+    },
+  };
 
 
 
@@ -88,6 +117,7 @@ export class CheckoutPageComponent implements OnInit {
     private stripeService: StripeService,
     private sharedService: SharedService,
     private cartService: CartService,
+    private authService: AuthService,
   ) {
     this.shippingAddressForm = this.fb.group({
       fName: ['', Validators.required],
@@ -151,14 +181,57 @@ export class CheckoutPageComponent implements OnInit {
 
   }
 
+  get currentPlan() {
+    return this.plans[this.selectedPlan];
+  }
+
+  onPlanChange(plan: 'monthly' | 'yearly' | 'oneDay') {
+    this.selectedPlan = plan;
+  }
+
+  async goToSubscription() {
+    const plan = this.plans[this.selectedPlan];
+    if (plan && plan.priceId) {
+
+      console.log('jjjjjjj plan.priceId', plan.priceId);
+      
+      const response: any = await this.stripeService.createCheckoutSub(this.userId, plan.priceId)
+
+      console.log('eeeeeee response', response);
+
+      if (response && response.url) {
+        // Redirect the user to the Stripe Checkout session
+        window.location.href = response.url;
+      } else {
+        console.error('No subscription URL returned.');
+      }
+
+
+    }
+  }
+
+  // goToSubscription() {
+
+  //   const plan = this.plans[this.selectedPlan];
+  //   if (plan && plan.link) {
+  //     window.open(plan.link, '_blank'); // Open the subscription link in a new tab
+  //   } else {
+  //     console.error('Subscription link is not available.');
+  //   }
+
+  // }
+
   async getCartItems() {
 
     this.cartService.getCart().subscribe({
       next: async (response) => {
 
-        this.cartItems = response
+        this.cartItems = response;
+        this.userId = this.cartItems?.cart?.[0]?.userId;;
         console.log('Getting user\'s cart', response);
         console.log('cartItems.cart cart', this.cartItems.cart);
+        console.log('userId', this.userId);
+        await this.getUserData(this.userId);
         this.sharedService.totalProducts = this.cartItems.totalItemInCart
         await this.calculateTotalProductPrice();
         this.totalPayableAmount();
@@ -166,6 +239,22 @@ export class CheckoutPageComponent implements OnInit {
     })
     
   }
+
+  async getUserData(userId: any) {
+
+    if (userId) {
+      this.authService.getUserById(userId).subscribe({
+        next: async (response: any) => {
+          this.isSubscribed = response.isSubscribed;
+          console.log('User info:', response);
+        },
+        error: (err: any) => {
+          console.error('Failed to fetch user info:', err);
+        },
+      });
+    }
+  }
+
 
   async calculateTotalProductPrice() {
 
@@ -345,6 +434,7 @@ loadCities(countryIso2: string, stateIso2: string): void {
     console.log('sub btn clicked!!');
     
   }
+
   async handleConfirmPayment() {
 
     console.log('this.stripe', this.stripe);
@@ -392,12 +482,15 @@ loadCities(countryIso2: string, stateIso2: string): void {
       // this.showPaymentFailed = true;
       // this.savingOrder = false;
     } else {
+
       // Send the token to your server to process the payment
-      // const confirmPayment = await this.commonAPIService.confirmPaymentIntentFunction(paymentMethod.id, this.paymentIntentId);
       try {
         console.log('qqqqqqqqq paymentMethod.id: ',paymentMethod.id, 'qqqqqqqqq paymentIntentId : ', this.paymentIntentId);
         
-        const confirmPayment: any = await this.stripeService.confirmPaymentIntentFunction(paymentMethod.id, this.paymentIntentId);
+        const confirmPayment = await this.stripeService.confirmPaymentIntentFunction(
+          paymentMethod.id,
+          this.paymentIntentId
+        );
         console.log('+++++++++++++ confirmPayment: ',confirmPayment);
 
         if (confirmPayment['paymentIntent']['status'] == "succeeded") {
@@ -408,7 +501,7 @@ loadCities(countryIso2: string, stateIso2: string): void {
 
 
             await this.confirmingOrder();
-        console.log('222222222222222222222222222 response', this.orderRes);
+            console.log('222222222222222222222222222 response', this.orderRes);
 
             this.router.navigate([`/order-confirmed/${this.orderRes.id}-${uniqueOrderId}`]);
 

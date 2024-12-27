@@ -132,6 +132,18 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/products?page=${page}&pageSize=${pageSize}`, { headers });
   }
   
+  getUserById(userId: number): Observable<any> {
+
+    const url = `${environment.apiUrl}/users`;
+
+    const token = this.getAuthToken();
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? token : '' // Send as-is
+    });
+
+    return this.http.get(`${url}/${userId}`, { headers });
+  }
   
   
 }
