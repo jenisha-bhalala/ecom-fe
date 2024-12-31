@@ -242,7 +242,99 @@
             <span class="mx-2 fw-bold">OR</span>
             <hr class="flex-grow-1" />
           </div>
-          <button *ngIf="!isSubscribed" class="btn btn-danger w-100" (click)="handleSubscription()">Subscribe now to get more Offers</button>
+
+          <!-- Button trigger modal -->
+      <button *ngIf="!isSubscribed" type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Subscribe now to get more Offers
+      </button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Choose Your Plan</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="subscription-options mb-4">
+          <div class="form-check mb-3">
+            <input 
+              class="form-check-input" 
+              type="radio" 
+              name="paymentPlan" 
+              id="monthlyPlan"  
+              value="monthly" 
+              (change)="onPlanChange('monthly')" 
+              [checked]="selectedPlan === 'monthly'">
+            <label class="form-check-label" for="monthlyPlan">
+              Pay monthly
+            </label>
+          </div>
+          <div class="form-check mb-3">
+            <input 
+              class="form-check-input" 
+              type="radio" 
+              name="paymentPlan" 
+              id="yearlyPlan" 
+              value="yearly" 
+              (change)="onPlanChange('yearly')" 
+              [checked]="selectedPlan === 'yearly'">
+            <label class="form-check-label" for="yearlyPlan">
+              Pay yearly ({{ plans.yearly.discount }})
+            </label>
+          </div>
+          <div class="form-check">
+            <input 
+              class="form-check-input" 
+              type="radio" 
+              name="paymentPlan" 
+              id="dailyPlan" 
+              value="daily" 
+              (change)="onPlanChange('oneDay')" 
+              [checked]="selectedPlan === 'oneDay'">
+            <label class="form-check-label" for="dailyPlan">
+              Pay daily ({{ plans.oneDay.discount }})
+            </label>
+          </div>
+        </div>
+
+        <div class="pricing-details mb-4">
+          <h2 class="display-4 mb-4">${{ currentPlan.price }} <span class="text-muted fs-6">/{{ currentPlan.duration }}</span></h2>
+          
+          <div class="features">
+            <div class="feature-item mb-2">
+              <svg class="text-success" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.3334 4L6.00008 11.3333L2.66675 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Extra Discount</span>
+            </div>
+            <div class="feature-item mb-2">
+              <svg class="text-success" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.3334 4L6.00008 11.3333L2.66675 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Free Shipping</span>
+            </div>
+            <div class="feature-item mb-2">
+              <svg class="text-success" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.3334 4L6.00008 11.3333L2.66675 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Faster Delivery</span>
+            </div>
+            <div class="feature-item mb-2">
+              <svg class="text-success" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.3334 4L6.00008 11.3333L2.66675 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>24/7 support</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary w-100 py-2" style="background-color: #030303;" (click)="goToSubscription()">Subscribe</button>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
       </div>
     </form>
