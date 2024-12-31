@@ -65,6 +65,26 @@
         </li>
         <li class="mb-2">
           <button 
+            class="btn tm-nav-btn w-100 py-2 d-flex align-items-center justify-content-start"
+            [ngClass]="{'active-nav-tab': activeTab === 'sortProduct'}"
+            (click)="setActiveTab('sortProduct')">
+            <!-- <i class="fa-solid fa-magnifying-glass me-2"></i> -->
+            <i class="fa-solid fa-sort me-2" style="color: #000000;"></i>
+            Sort By
+          </button>
+        </li>
+        <li class="mb-2">
+          <button
+            *ngIf="isSubscribed"
+            class="btn tm-nav-btn w-100 py-2 d-flex align-items-center justify-content-start"
+            [ngClass]="{'active-nav-tab': activeTab === 'modifySubscription'}"
+            (click)="setActiveTab('modifySubscription'); manageSubscription()">
+            <i class="fa-solid fa-credit-card me-2" style="color: #000000;"></i>
+            Modify Subscription
+          </button>
+        </li>
+        <li class="mb-2">
+          <button 
             class="btn tm-nav-btn w-100 py-2 d-flex align-items-center justify-content-start" 
             routerLink="/yourCart"
             [ngClass]="{'active-nav-tab': activeTab === 'yourCart'}"

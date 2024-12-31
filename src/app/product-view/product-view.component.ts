@@ -15,6 +15,7 @@ import { NgToastService } from 'ng-angular-popup';
 import * as _ from 'lodash'
 import { debounceTime, Subject, switchMap } from 'rxjs';
 import { SideNavComponent } from '../side-nav/side-nav.component';
+import { StripeService } from '../service/stripe.service';
 
 
 @Component({
@@ -28,7 +29,6 @@ import { SideNavComponent } from '../side-nav/side-nav.component';
     MatIconModule, 
     NgToastModule, 
     RouterModule,
-    SideNavComponent,
   ],
   templateUrl: './product-view.component.html',
   styleUrl: './product-view.component.css'
@@ -51,16 +51,17 @@ export class ProductViewComponent implements OnInit {
   totalProducts: number = 0; // Total number of products available
   totalPages: number = 0;   // Total number of pages based on products count
   
+  userId: any;
+  customerId: any;
+  isSubscribed: any;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private cartService: CartService,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef,
     private toast: NgToastService,
-    
+    private stripeService: StripeService,
   ){}
 
   async ngOnInit() {
@@ -90,21 +91,49 @@ export class ProductViewComponent implements OnInit {
   setActiveTab(tabName: string): void {
     this.activeTab = tabName;
   }
-
-  // get totalPages(): number {
-  //   return Math.ceil((this.products?.count || 0) / 16); // Handle undefined/null `products`
-  // }
   
+  async getUserData(userId: any) {
+
+    if (userId) {
+      this.authService.getUserById(userId).subscribe({
+        next: async (response: any) => {
+          console.log('User info:', response);
+          this.customerId = response.stripeCustomerId;
+          this.isSubscribed = response.isSubscribed;
+        },
+        error: (err: any) => {
+          console.error('Failed to fetch user info:', err);
+        },
+      });
+    }
+  }
 
   logOut() {
 
-    localStorage.removeItem('authToken'); // Example: Remove authentication token
+    localStorage.removeItem('authToken'); // Remove authentication token
     localStorage.clear(); // Clear all local storage if necessary
 
-    console.log('User logged out successfully');
-
-    // Redirect to the login page or any other page
     this.router.navigate(['/login']);
+  }
+
+  async manageSubscription() {
+
+    try {
+
+      const customerPortal = await this.stripeService.createCustomerPortalSession(this.customerId);
+  
+      if (customerPortal?.url) {
+
+        // Redirect to the fetched customer portal URL (For renewing OR updating subscription plan)
+        window.location.href = customerPortal.url;
+      } else {
+        console.error('Customer portal URL not found in the response.');
+      }
+
+    } catch (error) {
+      console.error('Error managing subscription:', error);
+    }
+    
   }
 
   async getProducts(page: number, pageSize: number) {
@@ -118,7 +147,6 @@ export class ProductViewComponent implements OnInit {
         this.totalProducts = data.count;  // Total number of products
         this.totalPages = Math.ceil(this.totalProducts / pageSize);  // Calculate total pages
         this.defaultProducts = _.cloneDeep(this.products);
-        // products = data;
       },
 
       error: (error) => {
@@ -147,15 +175,6 @@ export class ProductViewComponent implements OnInit {
           queryParamsHandling: 'merge', // Merge with existing query params
         });
   }
-  // async onSearch() {
-  //   this.loadProducts(this.searchQuery);
-   
-  //   this.router.navigate([], {
-  //     relativeTo: this.route,
-  //     queryParams: { search: this.searchQuery },
-  //     queryParamsHandling: 'merge', // Merge with existing query params
-  //   });
-  // }
 
   loadProducts(query: string = '') {
 
@@ -169,11 +188,8 @@ export class ProductViewComponent implements OnInit {
 
       next: (data) => {
         this.products = data
-    console.log('searcheddd data', data);
-    console.log('searcheddd this.products', this.products);
-    // if(this.products.count == 0) {
-    //   this.router.navigate(['/productNotFound'])
-    // }
+        console.log('searcheddd data', data);
+        console.log('searcheddd this.products', this.products);
 
       },
       error: (error) => {
@@ -184,11 +200,12 @@ export class ProductViewComponent implements OnInit {
 
   async updateCartCount() {
     this.cartService.getCart().subscribe({
-      next: (data: CartResponse) => {
+      next: async (data: CartResponse) => {
         console.log('ooooo data',data);
         console.log('ooooo data',data.totalItemInCart);
-        
-        this.cartItemCount = data.totalItemInCart; // Assuming the response is an array of items in the cart
+        this.userId = data.userId;
+        this.cartItemCount = data.totalItemInCart;
+        await this.getUserData(this.userId);
       },
       error: (error) => {
         console.error('Error fetching cart data', error);
@@ -201,8 +218,7 @@ export class ProductViewComponent implements OnInit {
     this.cartService.addItemToCart(productId).subscribe({
       next: (response) => {
         console.log('Item added to cart', response);
-       this.toast.success('Item added to cart', "Success", timeOut )
-        // alert('Item added to cart successfully!');
+       this.toast.success('Item added to cart', "Success", timeOut );
         this.updateCartCount();
         
       },

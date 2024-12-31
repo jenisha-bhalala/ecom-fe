@@ -70,6 +70,8 @@ export class LoginComponent implements OnInit {
     this.authService.signupUser(email, name, password).subscribe({
       next: (response) => {
         console.log('Signup successful:', response);
+        this.router.navigate(['/login']);
+
       },
       error: (error) => {
         console.error('Signup failed:', error);

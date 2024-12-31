@@ -51,6 +51,7 @@ export class CheckoutPageComponent implements OnInit {
   paymentDate: any;
   paymentIntentId: any;
   addressId: any;
+  orderRes: any;
   clientSecret: any;
   cardNumberError: boolean = false;
   cardExpiryError: boolean = false;
@@ -76,6 +77,7 @@ export class CheckoutPageComponent implements OnInit {
   productPrice: number = 0
 
   userId: any;
+  loggedInUserEmail: any;
   isSubscribed: boolean = false;
   selectedPlan: 'monthly' | 'yearly' | 'oneDay' = 'monthly'; // Default plan
 
@@ -94,7 +96,7 @@ export class CheckoutPageComponent implements OnInit {
     yearly: {
       price: 299.00,
       duration: 'YEAR',
-      discount: '60% OFF 💰',
+      discount: 'Up to 60% OFF 💰',
       link: 'https://buy.stripe.com/test_dR600b9SG0sO2fSfZ0',
       priceId: 'price_1QXb02GYiJ6IfSzH0wg3QuHX'
     },
@@ -128,24 +130,18 @@ export class CheckoutPageComponent implements OnInit {
       lineTwo: ['', Validators.required],
       country: ['', Validators.required],
       city: ['', Validators.required],
-      // state: [''],
       state: ['', Validators.required],
       pincode: ['', Validators.required],
-      // paymentMethod: [''],
       paymentMethod: ['cod', Validators.required], // Default to COD
       cardNumber: [''],
       expire: [''],
       cvc: [''],
     });
 
-    // this.setupPaymentValidation();
   }
 
   async ngOnInit() {
 
-    // await this.apiCountry();
-    // this.apiState();
-    // this.apiCity();
     await this.loadCountries();
 
     await this.getCartItems();
@@ -157,27 +153,27 @@ export class CheckoutPageComponent implements OnInit {
     });
 
     // Set default country as India
-  const defaultCountry = 'India';
-  this.shippingAddressForm.controls['country'].setValue(defaultCountry);
+    const defaultCountry = 'India';
+    this.shippingAddressForm.controls['country'].setValue(defaultCountry);
 
-  // Find the default country object (India)
-  console.log('OOOOOOOOOOOOOOOON ', this.countries);
-  
-  this.selectedCountry = this.countries.find(country => country.name === defaultCountry);
-
-  // Load states for India
-  if (this.selectedCountry) {
-    console.log('OOOOOOOOOOOOOOOON ');
+    // Find the default country object (India)
+    console.log('OOOOOOOOOOOOOOOON ', this.countries);
     
-    this.loadStates(this.selectedCountry.iso2);
-  }
+    this.selectedCountry = this.countries.find(country => country.name === defaultCountry);
 
-  // Trigger the loading of cities for India after loading states
-  this.loadCities(this.selectedCountry.iso2, 'IN'); // Assuming 'IN' is the state ISO2 for India
+    // Load states for India
+    if (this.selectedCountry) {
+      console.log('OOOOOOOOOOOOOOOON ');
+      
+      this.loadStates(this.selectedCountry.iso2);
+    }
 
-  // Set placeholder values for state and city
-  this.shippingAddressForm.controls['state'].setValue('');
-  this.shippingAddressForm.controls['city'].setValue('');
+    // Trigger the loading of cities for India after loading states
+    this.loadCities(this.selectedCountry.iso2, 'IN'); // Assuming 'IN' is the state ISO2 for India
+
+    // Set placeholder values for state and city
+    this.shippingAddressForm.controls['state'].setValue('');
+    this.shippingAddressForm.controls['city'].setValue('');
 
   }
 
@@ -195,7 +191,7 @@ export class CheckoutPageComponent implements OnInit {
 
       console.log('jjjjjjj plan.priceId', plan.priceId);
       
-      const response: any = await this.stripeService.createCheckoutSub(this.userId, plan.priceId)
+      const response: any = await this.stripeService.createCheckoutSub(this.userId, plan.priceId, this.loggedInUserEmail)
 
       console.log('eeeeeee response', response);
 
@@ -210,24 +206,13 @@ export class CheckoutPageComponent implements OnInit {
     }
   }
 
-  // goToSubscription() {
-
-  //   const plan = this.plans[this.selectedPlan];
-  //   if (plan && plan.link) {
-  //     window.open(plan.link, '_blank'); // Open the subscription link in a new tab
-  //   } else {
-  //     console.error('Subscription link is not available.');
-  //   }
-
-  // }
-
   async getCartItems() {
 
     this.cartService.getCart().subscribe({
       next: async (response) => {
 
         this.cartItems = response;
-        this.userId = this.cartItems?.cart?.[0]?.userId;;
+        this.userId = this.cartItems?.cart?.[0]?.userId;
         console.log('Getting user\'s cart', response);
         console.log('cartItems.cart cart', this.cartItems.cart);
         console.log('userId', this.userId);
@@ -246,6 +231,7 @@ export class CheckoutPageComponent implements OnInit {
       this.authService.getUserById(userId).subscribe({
         next: async (response: any) => {
           this.isSubscribed = response.isSubscribed;
+          this.loggedInUserEmail = response.email;
           console.log('User info:', response);
         },
         error: (err: any) => {
@@ -273,35 +259,30 @@ export class CheckoutPageComponent implements OnInit {
 
     if(this.productPrice != 0 ) {
       this.totalPrice = this.productPrice + this.taxAmount + this.shippingCharge;
-      // this.sharedService.totalPrice = this.totalPrice
     }
 
   }
 
   // Load states for selected country
-loadStates(countryIso2: string): void {
-  this.countryService.apiStates(countryIso2).subscribe(states => {
-    this.states = states.sort((a: any, b: any) => a.name.localeCompare(b.name));;
+  loadStates(countryIso2: string): void {
+    this.countryService.apiStates(countryIso2).subscribe(states => {
+      this.states = states.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-    // Reset the state and city dropdowns
-    this.shippingAddressForm.controls['state'].setValue('');
-    this.cities = []; // Reset cities when states are loaded
-  });
-}
+      // Reset the state and city dropdowns
+      this.shippingAddressForm.controls['state'].setValue('');
+      this.cities = []; // Reset cities when states are loaded
+    });
+  }
 
-// Load cities for the selected country and state
-loadCities(countryIso2: string, stateIso2: string): void {
-  this.countryService.apiCities(countryIso2, stateIso2).subscribe(cities => {
-    this.cities = cities;
+  // Load cities for the selected country and state
+  loadCities(countryIso2: string, stateIso2: string): void {
+    this.countryService.apiCities(countryIso2, stateIso2).subscribe(cities => {
+      this.cities = cities;
 
-    // Set city dropdown to empty (Select City) initially
-    this.shippingAddressForm.controls['city'].setValue('');
-  });
-}
-
-  // get totalPrice(): number {
-  //   return this.sharedService.totalPrice; // Access value from service
-  // }
+      // Set city dropdown to empty (Select City) initially
+      this.shippingAddressForm.controls['city'].setValue('');
+    });
+  }
 
   get totalProduct(): number {
     return this.sharedService.totalProducts; // Access value from service
@@ -323,17 +304,15 @@ loadCities(countryIso2: string, stateIso2: string): void {
 
       console.log('xxx paymentAmount===>', paymentAmount);
       const payload = {
-        // upmerchId: this.decodedUpmerchId || '',
-        // lineItems: JSON.stringify(this.order?.lintedItems) || '',
-        receiptEmail: this.shippingAddressForm.get('email')?.value || '',
-        // productTitle: this.removeDynamicPrefix(this.productTitle).split(' - #')[0],
+        receiptEmail: this.loggedInUserEmail,
+        // receiptEmail: this.shippingAddressForm.get('email')?.value || '',
         quantity: this.totalProduct,
         paymentType: 'ONE_TIME'
       }
       const amountInCents = Math.round(paymentAmount * 100);
 
 
-      const paymentIntentData: any = await this.stripeService.createPaymentIntentFunction(amountInCents, 'USD', payload)
+      const paymentIntentData: any = await this.stripeService.createPaymentIntentFunction(amountInCents, 'USD', payload);
     
       console.log('ppppp paymentIntentData', paymentIntentData);
       
@@ -405,9 +384,6 @@ loadCities(countryIso2: string, stateIso2: string): void {
             this.setStripeElementErrorFlag(elementName, false)
           } else if (event.error) {
             this.cardErrors[elementName] = event.error.message;
-            // if (elementName === 'cardNumber') {
-            //   this.cardNumberError = true;
-            // }
             this.setStripeElementErrorFlag(elementName, true)
           } else {
             this.cardErrors[elementName] = 'Card information is incomplete or invalid';
@@ -423,16 +399,9 @@ loadCities(countryIso2: string, stateIso2: string): void {
 
       }
 
-
       console.log('Stripe Elements initialized:', this.elements);
 
     }
-  }
-
-  async handleSubscription() {
-
-    console.log('sub btn clicked!!');
-    
   }
 
   async handleConfirmPayment() {
@@ -504,17 +473,10 @@ loadCities(countryIso2: string, stateIso2: string): void {
             console.log('222222222222222222222222222 response', this.orderRes);
 
             this.router.navigate([`/order-confirmed/${this.orderRes.id}-${uniqueOrderId}`]);
-
-            // this.router.navigate(['/order-confirmed']);
-
-            // this.isStripeModalOpened = false;
             const currentDate = new Date();
             this.paymentDate = `${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDate.getFullYear()}`;
-            // this.showPaymentFailed = false;
             this.paymentFailedMsg = "";
         } else {
-            // this.savingOrder = false;
-            // this.showPaymentFailed = true;
             this.paymentFailedMsg = 'An error occurred while processing your payment.';
             console.error('Payment not succeeded:', confirmPayment);
         }
@@ -528,8 +490,6 @@ loadCities(countryIso2: string, stateIso2: string): void {
               this.paymentFailedMsg = 'An error occurred while processing your payment.';
               console.error('Unhandled error:', e);
           }
-          // this.showPaymentFailed = true;
-          // this.savingOrder = false;
           console.log('this.paymentFailedMsg:', this.paymentFailedMsg);
       }
     }
@@ -557,17 +517,6 @@ loadCities(countryIso2: string, stateIso2: string): void {
     this.router.navigate([`/order-confirmed/${this.orderRes.id}-${uniqueOrderId}`]);
 
   }
-
-  // async apiCountry() {
-
-  //   console.log('api country ➡️➡️');
-  //   this.countryService.apiCountries().subscribe({
-  //     next: async (response) => {
-  //     console.log('api country response', response);
-  //      } 
-  //   })
-    
-  // }
 
   // Dynamically add or remove validators based on payment method
   setupPaymentValidation() {
@@ -622,15 +571,7 @@ loadCities(countryIso2: string, stateIso2: string): void {
         // this.states = data;
         this.states = data.sort((a: any, b: any) => a.name.localeCompare(b.name));;
 
-        // Trigger city loading for the default state
-        // if (this.states.length > 0) {
-        //   const firstState = this.states[0];
-        //   this.shippingAddressForm.controls['state'].setValue(firstState.name);
-        //   this.onStateSelect({ target: { value: firstState.name } } as any); // Trigger state selection
-        // }
-
       });
-
 
     }
   }
@@ -660,22 +601,16 @@ loadCities(countryIso2: string, stateIso2: string): void {
 
         this.cities = await data;
 
-        // Automatically select the first city
-      // if (this.cities.length > 0) {
-      //   const firstCity = this.cities[0];
-      //   this.shippingAddressForm.controls['city'].setValue(firstCity.name);
-      // }
-      
       });
     }
 
      // Set the first city as the default
-  if (this.cities.length > 0) {
-    console.log('in if of stateSelect');
+    if (this.cities.length > 0) {
+      console.log('in if of stateSelect');
 
-    const firstCity = this.cities[0].name;
-    this.shippingAddressForm.patchValue({ city: firstCity });
-  }
+      const firstCity = this.cities[0].name;
+      this.shippingAddressForm.patchValue({ city: firstCity });
+    }
     console.log('this.cities', this.cities);
 
   }
@@ -698,8 +633,6 @@ loadCities(countryIso2: string, stateIso2: string): void {
         next: async (response: any) => {
           console.log('Address submitted successfully:', response);
           this.addressId = response.id;
-          // await this.confirmingOrder();
-          // this.router.navigate(['/order-confirmed']);
         },
         error: (error: any) => {
           console.error('Error submitting address:', error);
@@ -710,36 +643,16 @@ loadCities(countryIso2: string, stateIso2: string): void {
     }
   }
 
-  orderRes: any;
-
-  // async confirmingOrder() {
-
-  //   const selectedPaymentMethod  = this.shippingAddressForm.get('paymentMethod')!.value; 
-  //   (await this.shipAddress.confirmOrder(this.addressId, this.totalPrice, selectedPaymentMethod)).subscribe({
-  //     next: async (response) => {
-  //     this.orderRes = response;
-        
-  //       console.log('hhhhhhhhhhhhhhhhhh confirmed');
-  //       console.log('hhhhhhhhhhhhhhhhhh response', response);
-  //     }
-      
-  //   });
-
-  // }
-
   async confirmingOrder() {
     const selectedPaymentMethod = this.shippingAddressForm.get('paymentMethod')!.value;
   
     // Convert Observable to Promise
-    const response = await (await this.shipAddress.confirmOrder(this.addressId, this.totalPrice, selectedPaymentMethod))
-      .toPromise(); // Converts the Observable to a Promise
+    const response = await (await this.shipAddress.confirmOrder(this.addressId, this.totalPrice, selectedPaymentMethod));
   
     this.orderRes = response;
     console.log('hhhhhhhhhhhhhhhhhh confirmed');
     console.log('hhhhhhhhhhhhhhhhhh response', this.orderRes);
-  }
-  
-  
+  } 
 
 }
 
