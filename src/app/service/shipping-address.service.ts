@@ -21,7 +21,6 @@ export class ShippingAddressService {
     return localStorage.getItem('authToken');
   }
 
-  // async uploadAddress(lineOne: string, lineTwo: string, pincode: string, country: string, state: string, city: string) {
   async uploadAddress(address: any) {
 
     const token = this.getAuthToken();

@@ -30,11 +30,6 @@ export class CountryService {
     return this.http.get(`${this.apiLocation}/cities?countryId=${countryCode}&stateId=${stateCode}`);
   }
 
-  // getAllCountries(): Observable<any> {
-  //   return this.http.get(this.countriesUrl);
-  // }
-
-
   getStatesByCountry(countryName: string): Observable<any> {
     return this.http.post(this.statesByCountryUrl, { country: countryName });
   }

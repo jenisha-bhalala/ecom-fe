@@ -44,19 +44,6 @@ export class AuthService {
         console.log('response:', response);
 
         const authHeader = response.headers.get('Authorization');
-        // if (authHeader && authHeader.startsWith('Bearer ')) { 
-
-        //   const token = authHeader.split(' ')[1];
-        //   console.log('token:', token);
-        //   if(token) {
-        //     console.log('login successful, token:', token);
-            
-        //     this.storeAuthToken(token)
-        //   } else {
-        //     console.error('No token found in the Authorization header');
-        //   }
-        // }
-
 
         const token = response.body.token;
         if(token) {
@@ -97,30 +84,6 @@ export class AuthService {
   logoutUser() {
 
   }
-
-  // listProducts(): Observable<any> {
-
-  //   const token = this.getAuthToken();
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     'Authorization': token ? `Bearer ${token}` : 'No Token'
-  //   })
-    
-  //   const requestParameters = '';
-
-    
-
-  //     const result =  this.http.get(`${this.apiUrl}/products`, {headers}).pipe(
-
-  //       catchError(error => {
-  //         console.error('Error fetching products:', error);
-  //         return throwError(error);
-  //       })
-
-  //     );
-        
-  //     return result;
-  // }
 
   listProducts(page: number, pageSize: number): Observable<any> {
     const token = this.getAuthToken();
